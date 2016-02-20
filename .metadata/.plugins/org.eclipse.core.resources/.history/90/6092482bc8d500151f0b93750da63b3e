@@ -1,0 +1,12 @@
+package triptych;
+
+import java.util.Random;
+
+public class HumanPlayer {
+	private Card[] deck={new Doom(), new AlchemicalBreakthrough()};
+	public Card drawCard(){
+		Random random=new Random();
+		random.nextInt(deck.length);
+		return deck[i];
+	}
+}

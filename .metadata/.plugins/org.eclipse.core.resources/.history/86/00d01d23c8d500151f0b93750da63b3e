@@ -1,0 +1,8 @@
+package triptych;
+
+public class HumanPlayer {
+	private Card[] deck={new Doom(), new AlchemicalBreakthrough()};
+	public Card drawCard(){
+		return deck[i];
+	}
+}

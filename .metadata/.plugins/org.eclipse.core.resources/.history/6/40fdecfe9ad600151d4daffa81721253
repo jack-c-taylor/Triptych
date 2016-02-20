@@ -1,0 +1,16 @@
+package triptych;
+
+import java.util.Random;
+
+import triptych.Cards.AlchemicalBreakthrough;
+import triptych.Cards.ColdSnap;
+import triptych.Cards.Doom;
+
+public class HumanPlayer {
+	private Random random=new Random();
+	private Card[] deck={new Doom(), new AlchemicalBreakthrough(), new ColdSnap()};
+	public Card drawCard(){
+		int i=random.nextInt(deck.length);
+		return deck[i];
+	}
+}

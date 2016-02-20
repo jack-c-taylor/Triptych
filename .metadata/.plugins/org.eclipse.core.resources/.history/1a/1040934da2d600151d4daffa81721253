@@ -1,0 +1,225 @@
+package triptych;
+
+import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
+import javax.swing.Box;
+import javax.swing.BoxLayout;
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JTextArea;
+import javax.swing.WindowConstants;
+import javax.swing.border.EmptyBorder;
+
+/** Creates the GUI and handles game logic.
+ * 
+ * @author Jack
+ * @version 1.0.0
+ *
+ */
+public class Triptych extends JFrame implements ActionListener{
+	
+	/**
+	 * Unique identifier for the window, presumably.
+	 */
+	private static final long serialVersionUID = 1738699392826111478L;
+	private FieldCard topLayer;
+	private FieldCard middleLayer;
+	private FieldCard bottomLayer;
+	private JPanel[] playerFieldSpaces=new JPanel[7];
+	private JPanel[] computerFieldSpaces=new JPanel[7];
+	private JButton[] handSpaces=new JButton[7];
+	private JPanel field=new JPanel();
+	private JPanel playerField=new JPanel();
+	private JPanel computerField=new JPanel();
+	private JPanel handField=new JPanel();
+	private JPanel descriptionField=new JPanel();
+	private JPanel statusField=new JPanel();
+	private JTextArea name=new JTextArea(1,20);
+	private JTextArea element=new JTextArea(1,20);
+	private JTextArea type=new JTextArea(1,20);
+	private JTextArea description=new JTextArea(10,20);
+	private JTextArea history=new JTextArea(10,20);
+	private GameProperties gameProperties=GameProperties.getInstance();
+	
+	/**
+	 * Creates the GUI, sets size and allows it to close.
+	 */
+	public static void main(String[] args) {
+		Triptych triptych=new Triptych();
+		triptych.setTitle("Triptych");
+		triptych.setSize(1000,690);
+		triptych.setVisible(true);
+		triptych.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+	}
+	
+	/**
+	 * Constructor. Sets various panels in place to organise components.
+	 */
+	public Triptych(){
+		setLayout(new FlowLayout());
+		newStatusField();
+		newCardField();
+		newCardDescriptionField();
+		add(statusField);
+		add(field);
+		add(descriptionField);
+		
+	}
+	
+	/**
+	 * Generates the sets of card buttons and borders between them.
+	 */
+	public void newCardField(){
+		for (int i=0; i<3;i++){
+			playerFieldSpaces[i]=newCardPanel(true);
+			playerField.add(playerFieldSpaces[i]);
+			computerFieldSpaces[i]=newCardPanel(false);
+			computerField.add(computerFieldSpaces[i]);
+			drawCard();
+		}
+		drawCard();
+		drawCard();
+		field.setLayout(new BoxLayout(field, EXIT_ON_CLOSE));
+		field.setBorder(new EmptyBorder(10, 10, 10, 10));
+		field.add(computerField);
+		field.add(Box.createRigidArea(new Dimension(0,10)));
+		field.add(playerField);
+		field.add(Box.createRigidArea(new Dimension(400,30)));
+		field.add(handField);
+	}
+	
+	/**
+	 * Generates the text fields for descriptions of cards and adds borders between them.
+	 */
+	public void newCardDescriptionField(){
+		//Sets all information fields to non-editable.
+		name.setEditable(false);
+		element.setEditable(false);
+		type.setEditable(false);
+		description.setEditable(false);
+		description.setWrapStyleWord(true);
+		//Generates the text fields and adds borders between them.
+		descriptionField.setLayout(new BoxLayout(descriptionField, EXIT_ON_CLOSE));
+		descriptionField.add(new JLabel("Name: "));
+		descriptionField.add(Box.createRigidArea(new Dimension(0,5)));
+		descriptionField.add(name);
+		descriptionField.add(Box.createRigidArea(new Dimension(0,10)));
+		descriptionField.add(new JLabel("Element: "));
+		descriptionField.add(Box.createRigidArea(new Dimension(0,5)));
+		descriptionField.add(element);
+		descriptionField.add(Box.createRigidArea(new Dimension(0,10)));
+		descriptionField.add(new JLabel("Type: "));
+		descriptionField.add(Box.createRigidArea(new Dimension(0,5)));
+		descriptionField.add(type);
+		descriptionField.add(Box.createRigidArea(new Dimension(0,10)));
+		descriptionField.add(new JLabel("Description: "));
+		descriptionField.add(Box.createRigidArea(new Dimension(300,5)));
+		descriptionField.add(description);
+	}
+	
+	/**
+	 * Generates the text fields for information on the players and adds borders between them.
+	 */
+	public void newStatusField(){
+		//Generates the text fields and adds borders between them.
+		statusField.setLayout(new BoxLayout(statusField, EXIT_ON_CLOSE));
+		statusField.add(new JLabel("Player 1 health: "));
+		statusField.add(Box.createRigidArea(new Dimension(0,5)));
+		statusField.add(new JLabel("Player 2 health: "));
+		statusField.add(Box.createRigidArea(new Dimension(0,5)));
+		statusField.add(new JLabel("Last moves: "));
+		statusField.add(Box.createRigidArea(new Dimension(0,5)));
+		statusField.add(history);
+		statusField.add(Box.createRigidArea(new Dimension(150,5)));
+	}
+	
+	/**
+	 * Creates a new panel with three spaces for cards.
+	 */
+	public JPanel newCardPanel(boolean isPlayer){
+		JPanel cardPanel=new JPanel();
+		cardPanel.setLayout(new BoxLayout(cardPanel, BoxLayout.Y_AXIS));
+		if (isPlayer){
+			addplayerFieldSpace();
+		}else{
+			addComputerFieldSpace();
+		}
+		topLayer.addActionListener(this);
+		middleLayer.addActionListener(this);
+		bottomLayer.addActionListener(this);
+		cardPanel.add(topLayer);
+		cardPanel.add(middleLayer);
+		cardPanel.add(bottomLayer);
+		return cardPanel;
+	}
+	
+	/**
+	 * Creates 3 spaces for player cards.
+	 */
+	private void addplayerFieldSpace(){
+		topLayer=new PlayerCard(new EmptyCard(), 1);
+		middleLayer=new PlayerCard(new EmptyCard(), 2);
+		bottomLayer=new PlayerCard(new EmptyCard(), 3);
+	}
+	
+	/**
+	 * Creates 3 spaces for computer cards.
+	 */
+	private void addComputerFieldSpace(){
+		topLayer=new ComputerCard(new EmptyCard(), 3);
+		middleLayer=new ComputerCard(new EmptyCard(), 2);
+		bottomLayer=new ComputerCard(new EmptyCard(), 1);
+	}
+	
+	/**
+	 * Sets the values of the text areas according to the current card.
+	 */
+	private void updateDescription(Card card){
+		name.setText(card.getName());
+		type.setText(card.getType());
+		element.setText(card.getElement());
+		description.setText(card.getDescription());
+	}
+	
+	/**
+	 * Adds a card from the deck to the hand.
+	 */
+	private void drawCard(){
+		Card card=gameProperties.getPlayer1().drawCard();
+		HandCard handCard=new HandCard(card);
+		handCard.addActionListener(this);
+		handSpaces[handSpaces.length-1]=handCard;
+		handField.add(handSpaces[handSpaces.length-1]);
+	}
+	
+	/** 
+	 * ActionEvent handler - called back upon button-click. 
+	 */
+	@Override
+	public void actionPerformed(ActionEvent evt) {
+		if (evt.getSource() instanceof PlayerCard){
+			if (gameProperties.isHandCardSelected()){
+				gameProperties.isHandCardSelected(false);
+				((FieldCard) evt.getSource()).setCard(gameProperties.getSelectedCard().getCard());
+				handField.remove(gameProperties.getSelectedCard());
+				handField.repaint();
+				
+			}else{
+				((FieldCard) evt.getSource()).onClick();
+			}
+		}
+		if (evt.getSource() instanceof FieldCard||evt.getSource() instanceof HandCard){
+			gameProperties.setSelectedCard((ButtonCard) evt.getSource()); 
+			updateDescription(((ButtonCard) evt.getSource()).getCard());	
+		}
+		if (evt.getSource() instanceof HandCard){
+			((HandCard) evt.getSource()).onClick();
+		}
+	}
+
+}

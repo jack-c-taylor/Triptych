@@ -1,0 +1,29 @@
+package triptych;
+
+public class AlchemicalBreakthrough extends Card {
+
+	public AlchemicalBreakthrough(){
+		name="Alchemical Breakthrough";
+		element="Fire";
+		type="Effect";
+		description="1: Deal 500 damage.\n2: Destroy this card and one other.\n3: Deal 200 damage for every Dark card on the field.";
+				}
+	
+	@Override
+	public void firstEffect() {
+			System.out.println("Doom");
+	}
+
+	@Override
+	public void secondEffect() {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void thirdEffect() {
+		// TODO Auto-generated method stub
+
+	}
+
+}
